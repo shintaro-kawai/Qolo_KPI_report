@@ -8,7 +8,7 @@ Make KPI reports for Qolo and hospitals
 - Qolo向けのグラフ
   - [ ] 拠点ごとの合計動作回数
   - [ ] 疾患ごとの症例数・訓練回数・動作回数（複数項目の棒グラフ）
-  - [ ]各機体の累積動作量
+  - [ ] 各機体の累積動作量
 
 ## Project structure
 <pre>
