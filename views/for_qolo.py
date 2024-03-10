@@ -6,8 +6,6 @@ import numpy as np
 import streamlit as st
 import pydeck as pdk
 import plotly.express as px
-import csv
-import json
 
 # ファイルが入っているフォルダまでのパスを文字列で取得
 current_dir = os.path.dirname(os.path.abspath(__file__))
