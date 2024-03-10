@@ -14,8 +14,10 @@ def merge_csv_files(folder_path, etl_path, output_file_name):
     with open("./data/other/header_list.json", "r") as f:
         header_dict = json.load(f)["column_name"]
         header_list = list(header_dict.keys())
+        """各カラムの項目"""
         patient = header_list[0]  # 患者氏名
         disease = header_list[5]  # 疾患
+        disease_level = header_list[6]  # 疾患レベル
         standup_num = header_list[7]  # 起立回数
 
     csv_files = [f for f in os.listdir(folder_path) if f.endswith(".csv")]
@@ -108,7 +110,7 @@ def merge_csv_files(folder_path, etl_path, output_file_name):
     merged_df = pd.concat(df_temp, ignore_index=True, sort=False)
     print(merged_df)
 
-    # ../data/etl/merged_data.csv を出力
+    """ 全CSVファイル../data/etl/merged_data.csv を出力 """
     output_path = os.path.join(etl_path, output_file_name)
 
     merged_df.columns = header_list
