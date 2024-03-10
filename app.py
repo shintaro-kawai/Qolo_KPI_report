@@ -1,18 +1,23 @@
-import pandas as pd
-import time
-import matplotlib.pyplot as plt
 import streamlit as st
-import seaborn
-import plotly.express as px
+from PIL import Image
+import os
 
+# set streamlit
+st.set_page_config(page_title="app.py", layout="wide")
+
+from modules.data_prepare import merge_csv_files
 from views.for_qolo import for_qolo_result
 from views.for_hospital import for_hospital_result
 
+# ファイルが入っているフォルダまでのパスを文字列で取得
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.abspath(os.path.join(current_dir, os.pardir))
 
 # Data preparation
-def data_prepare():
-    """あとでコーディング"""
-    print("Hello, streamlit!")
+folder_path = "./data/raw"
+etl_path = "./data/etl"
+output_file_name = "merged_data.csv"
+merge_csv_files(folder_path, etl_path, output_file_name)
 
 
 # 画面1: Qolo
@@ -30,16 +35,19 @@ def display_for_hospital():
 # HOME画面
 def home():
     """Display home page."""
-    st.header("KPI Report")
+    st.header("KPI Report made by Qolo inc.")
     st.markdown("過去取得されたデータに基づいて、KPIレポートを作成します。")
     st.text("Qolo inc. output monthly KPI reports based on the past data.")
 
 
 def main():
-    """Data preparation"""
-    data_prepare()
     """Display results by streamlit"""
-    st.set_page_config(layout="wide")
+
+    # ロゴ表示
+    img_path = f"{current_dir}/images/Qolo_logo.png"
+    st.sidebar.image(img_path)
+
+    # サイドバーセレクトボックス
     views = {
         "ホーム": home,
         "Qolo向けKPIレポート": display_for_qolo,

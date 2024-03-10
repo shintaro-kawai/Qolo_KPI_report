@@ -18,14 +18,19 @@ Make KPI reports for Qolo and hospitals
 ├── app.py
 ├── data
 │   ├── etl
+│   │   └── merged_data.csv
 │   ├── other
+│   │   ├── df_patient_info.csv
 │   │   └── header_list.json
 │   └── raw
 ├── images
 │   └── Qolo_logo.png
 ├── modules
+│   └── data_prepare.py
 ├── requirements.txt
 ├── results
+│   ├── count_output.csv
+│   └── filename_list.csv
 └── views
     ├── for_hospital.py
     └── for_qolo.py
