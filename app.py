@@ -1,10 +1,10 @@
 import streamlit as st
-from PIL import Image
 import os
 
 # set streamlit
 st.set_page_config(page_title="app.py", layout="wide")
 
+# modules/viewsフォルダから関数をインポート
 from modules.data_prepare import merge_csv_files
 from views.for_qolo import for_qolo_result
 from views.for_hospital import for_hospital_result
@@ -13,7 +13,8 @@ from views.for_hospital import for_hospital_result
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.abspath(os.path.join(current_dir, os.pardir))
 
-# Data preparation
+# データETL: Extract/Transfer/Load
+# rawデータを整形し、merged_data.csvを生成。結果のグラフ出力は、merged_data.csvをベースに作成。
 folder_path = "./data/raw"
 etl_path = "./data/etl"
 output_file_name = "merged_data.csv"
@@ -32,7 +33,7 @@ def display_for_hospital():
     return for_hospital_result()
 
 
-# HOME画面
+# 画面: HOME
 def home():
     """Display home page."""
     st.header("KPI Report made by Qolo inc.")
@@ -40,6 +41,7 @@ def home():
     st.text("Qolo inc. output monthly KPI reports based on the past data.")
 
 
+# メイン関数
 def main():
     """Display results by streamlit"""
 
