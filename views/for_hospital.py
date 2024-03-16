@@ -91,11 +91,11 @@ def for_hospital_result() -> None:
     print(df_train_num)
     print(df_move_num)
 
-    df_desease_count = pd.merge(df_patient_num, df_train_num, on="疾患", how="inner")
-    df_desease_count = pd.merge(df_desease_count, df_move_num, on="疾患", how="inner")
-    df_desease_count = df_desease_count.rename(columns={"患者氏名": "症例数"})
+    df_disease_count = pd.merge(df_patient_num, df_train_num, on="疾患", how="inner")
+    df_disease_count = pd.merge(df_disease_count, df_move_num, on="疾患", how="inner")
+    df_disease_count = df_disease_count.rename(columns={"患者氏名": "症例数"})
 
-    print(df_desease_count)
+    print(df_disease_count)
 
     parameter_list = [
         "症例数",
@@ -103,10 +103,10 @@ def for_hospital_result() -> None:
         "累積動作回数",
     ]
     option_parameter = st.selectbox("比較指標の種類", (parameter_list))
-    max_x = df_desease_count[option_parameter].max() + 5
+    max_x = df_disease_count[option_parameter].max() + 5
 
     fig = px.bar(
-        df_desease_count,
+        df_disease_count,
         x=option_parameter,
         y="疾患",
         color="疾患",
