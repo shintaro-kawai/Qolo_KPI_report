@@ -6,8 +6,7 @@ import numpy as np
 import streamlit as st
 import pydeck as pdk
 import plotly.express as px
-import csv
-import json
+import plotly.graph_objects as go
 
 # ファイルが入っているフォルダまでのパスを文字列で取得
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -40,7 +39,8 @@ def _read_data() -> pd.DataFrame:
             "年齢",
             "疾患",
             "疾患レベル",
-            "アンケート結果",
+            "病院ID",
+            "Q1",
         ]
     ]
 
@@ -76,9 +76,6 @@ def _read_data() -> pd.DataFrame:
 # 結果
 def for_hospital_result() -> None:
 
-    # 1.疾患ごとの症例数・訓練回数・累積動作回数
-    st.header("疾患ごとの症例数・訓練回数・累積動作回数")
-
     df = _read_data()
 
     # 疾患ごとの症例数・訓練回数・累積動作回数カウント
@@ -97,26 +94,96 @@ def for_hospital_result() -> None:
 
     print(df_disease_count)
 
-    parameter_list = [
-        "症例数",
-        "訓練回数",
-        "累積動作回数",
-    ]
-    option_parameter = st.selectbox("比較指標の種類", (parameter_list))
-    max_x = df_disease_count[option_parameter].max() + 5
+    # [2軸グラフ]訓練回数と累積動作回数
+    fig = go.Figure()
 
-    fig = px.bar(
+    fig.add_trace(
+        go.Bar(
+            x=[f"{disease_name}" for disease_name in df_disease_count["疾患"]],
+            y=df_disease_count["累積動作回数"],
+            yaxis="y1",
+            offsetgroup=1,
+            name="累積動作回数",
+        )
+    )
+    fig.add_trace(
+        go.Bar(
+            x=[f"{disease_name}" for disease_name in df_disease_count["疾患"]],
+            y=df_disease_count["訓練回数"],
+            yaxis="y2",
+            offsetgroup=2,
+            name="訓練回数",
+        )
+    )
+    # fig.add_trace(
+    #     go.Scatter(
+    #         x=[f"{disease_name}" for disease_name in df_disease_count["疾患"]],
+    #         y=df_disease_count["累積動作回数"],
+    #         mode="markers",
+    #         marker_size=df_disease_count["症例数"].values.tolist(),
+    #         marker_color=(
+    #             "violet",  # CSSカラー
+    #             "#ee82ee",  # HTMLカラー
+    #             "rgb(238, 130, 238)",  # rgb(Red, Green, Blue)
+    #             "rgba(238, 130, 238, 0.2)",  # rgba(Red, Green, Blue, alpha)
+    #         ),
+    #     )
+    # )
+
+    # グラフ全体のレイアウト
+    fig.update_layout(
+        yaxis1=dict(side="left"),
+        yaxis2=dict(side="right", overlaying="y", showgrid=False),
+    )
+    fig.update_layout(
+        barmode="group",
+        width=800,
+        height=500,
+        font_size=18,
+        hoverlabel_font_size=14,
+        legend=dict(x=0.9, y=-0.1, xanchor="left", yanchor="top"),
+    )
+    st.header("疾患ごとの累積動作回数と訓練回数")
+    st.plotly_chart(fig)
+
+    # [棒グラフ]症例数
+    max_y = df_disease_count["症例数"].max() + 1
+    fig2 = px.bar(
         df_disease_count,
-        x=option_parameter,
-        y="疾患",
-        color="疾患",
-        # animation_frame="年齢",
-        range_x=[0, max_x],
-        orientation="h",  # 縦棒グラフはv
+        y="症例数",
+        x="疾患",
+        range_y=[0, max_y],
+        orientation="v",
         width=800,
         height=500,
     )
-    st.plotly_chart(fig)
+    fig2.update_layout(
+        width=800,
+        height=500,
+        font_size=18,
+        hoverlabel_font_size=14,
+    )
+    st.header("疾患ごとの症例数")
+    st.plotly_chart(fig2)
+
+
+# parameter_list = [
+#     "訓練回数",
+#     "累積動作回数",
+# ]
+# # option_parameter = st.selectbox("比較指標の種類", (parameter_list))
+# max_y = df_disease_count["累積動作回数"].max() + 5
+
+# selected_items = st.multiselect(
+#     "Select parameters",
+#     options=parameter_list,
+#     default=parameter_list,
+#     key="selected_parameters",
+#     # placeholder="Please choose parameter",
+# )
+
+# if st.checkbox("All parameters ", key="check_parameters"):
+#     selected_items = parameter_list
 
 
 if __name__ == "__main__":
