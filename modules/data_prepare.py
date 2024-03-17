@@ -70,9 +70,13 @@ def merge_csv_files(folder_path, etl_path, output_file_name):
         df_hos_id = pd.DataFrame(hos_list, columns=["hospital_id"])
         df_datetime = pd.DataFrame(datetime_list, columns=["date_time"])
 
-        """病院IDと日時を連結"""
+        """日時から年月(yyyy-mm)を抽出して年月カラムを追加"""
+        df_yyyymm = df_datetime["date_time"].str[:7]
+
+        """病院IDと日時、年月を連結"""
         df2 = pd.concat([df, df_hos_id], axis=1)
         df3 = pd.concat([df2, df_datetime], axis=1)
+        df4 = pd.concat([df3, df_yyyymm], axis=1)
 
         """アンケート回答を分解"""
         val_list = []
@@ -97,15 +101,15 @@ def merge_csv_files(folder_path, etl_path, output_file_name):
                 val_list.append([0, 0, 0, 0, 0])
         df_quest = pd.DataFrame(val_list, columns=quest_list)
 
-        """疾患を番号から疾患名に置換"""
+        """アンケートQ1を文字列「1名」から数値「1」に置換"""
         df_quest = df_quest.replace({"q1": {"1名": 1, "2名": 2, "3名": 3}})
         print(df_quest)
 
         """アンケート回答Q1~5を連結"""
-        df4 = pd.concat([df3, df_quest], axis=1)
+        df5 = pd.concat([df4, df_quest], axis=1)
 
         """CSVの中身を下に追加していく"""
-        df_temp.append(df4)
+        df_temp.append(df5)
 
     merged_df = pd.concat(df_temp, ignore_index=True, sort=False)
     print(merged_df)

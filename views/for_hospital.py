@@ -40,6 +40,7 @@ def _read_data() -> pd.DataFrame:
             "疾患",
             "疾患レベル",
             "病院ID",
+            "年月",
             "Q1",
         ]
     ]
@@ -83,10 +84,6 @@ def for_hospital_result() -> None:
     df_patient_num = df.groupby(["疾患"], as_index=False)[["患者氏名"]].count()
     df_train_num = df.groupby(["疾患"], as_index=False)[["訓練回数"]].sum()
     df_move_num = df.groupby(["疾患"], as_index=False)[["累積動作回数"]].sum()
-
-    print(df_patient_num)
-    print(df_train_num)
-    print(df_move_num)
 
     df_disease_count = pd.merge(df_patient_num, df_train_num, on="疾患", how="inner")
     df_disease_count = pd.merge(df_disease_count, df_move_num, on="疾患", how="inner")
@@ -165,6 +162,53 @@ def for_hospital_result() -> None:
     )
     st.header("疾患ごとの症例数")
     st.plotly_chart(fig2)
+
+    # 年月ごとのデータ
+    st.header("年月ごとのデータ集計")
+
+    """
+    病院ごとの症例数・訓練回数・累積動作回数カウント
+    「病院ID」もカラムに含めるために、as_index=Falseを指定
+    """
+    yyyymm_list = df["年月"].unique()
+    option_yyyymm = st.selectbox("年月", (yyyymm_list))
+    df_year = df[(df["年月"] == option_yyyymm)]
+
+    df_patient_num_2 = df_year.groupby(["病院ID"], as_index=False)[["患者氏名"]].count()
+    df_train_num_2 = df_year.groupby(["病院ID"], as_index=False)[["訓練回数"]].sum()
+    df_move_num_2 = df_year.groupby(["病院ID"], as_index=False)[["累積動作回数"]].sum()
+
+    df_disease_count_2 = pd.merge(
+        df_patient_num_2, df_train_num_2, on="病院ID", how="inner"
+    )
+    df_disease_count_2 = pd.merge(
+        df_disease_count_2, df_move_num_2, on="病院ID", how="inner"
+    )
+    df_disease_count_2 = df_disease_count_2.rename(columns={"患者氏名": "症例数"})
+
+    print(df_disease_count_2)
+
+    parameter_list = [
+        "症例数",
+        "訓練回数",
+        "累積動作回数",
+    ]
+    opt_para = st.selectbox("指標の種類", (parameter_list))
+
+    # max_y = df_year[opt_para].max() + 50
+
+    fig = px.bar(
+        df_disease_count_2,
+        y=opt_para,
+        x="病院ID",
+        # color="病院ID",
+        # animation_frame="",
+        # range_y=[0, max_y],
+        orientation="v",
+        width=800,
+        height=500,
+    )
+    st.plotly_chart(fig)
 
 
 # parameter_list = [
