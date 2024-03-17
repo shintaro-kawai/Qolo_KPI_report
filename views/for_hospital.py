@@ -170,7 +170,8 @@ def for_hospital_result() -> None:
     病院ごとの症例数・訓練回数・累積動作回数カウント
     「病院ID」もカラムに含めるために、as_index=Falseを指定
     """
-    yyyymm_list = df["年月"].unique()
+    df_ym = df.sort_values("年月")
+    yyyymm_list = df_ym["年月"].unique()
     option_yyyymm = st.selectbox("年月", (yyyymm_list))
     df_year = df[(df["年月"] == option_yyyymm)]
 
