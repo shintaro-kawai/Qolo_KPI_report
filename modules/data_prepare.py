@@ -111,7 +111,7 @@ def merge_csv_files(folder_path, etl_path, output_file_name):
         """CSVの中身を下に追加していく"""
         df_temp.append(df5)
 
-    merged_df = pd.DataFrame(df_temp, ignore_index=True, sort=False)
+    merged_df = pd.concat(df_temp, sort=False, ignore_index=True)
     print(merged_df)
 
     """ 全CSVファイルをマージした ../data/etl/merged_data.csv を出力 """

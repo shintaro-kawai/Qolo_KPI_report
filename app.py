@@ -8,6 +8,7 @@ st.set_page_config(page_title="app.py", layout="wide")
 from modules.data_prepare import merge_csv_files
 from views.for_qolo import for_qolo_result
 from views.for_hospital import for_hospital_result
+from views.strategy import strategy
 
 # ファイルが入っているフォルダまでのパスを文字列で取得
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -41,6 +42,12 @@ def home():
     st.text("Qolo inc. output monthly KPI reports based on the past data.")
 
 
+# 画面: strategy
+def display_strategy():
+    """Display patients' strategy"""
+    return strategy()
+
+
 # メイン関数
 def main():
     """Display results by streamlit"""
@@ -54,6 +61,7 @@ def main():
         "ホーム": home,
         "Qolo向けKPIレポート": display_for_qolo,
         "病院向けKPIレポート": display_for_hospital,
+        "Optimal Strategy": display_strategy,
     }
     selected_view = st.sidebar.selectbox(label="Views", options=list(views.keys()))
     render_view = views[selected_view]
