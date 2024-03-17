@@ -44,11 +44,8 @@ def get_disease_info() -> Tuple[list, dict]:
     return disease_list, disease_level_dict
 
 
-# 画面表示内容
+# Optimal Strategy
 def strategy():
-
-    print(get_disease_info()[0])
-    print(get_disease_info()[1])
 
     st.header("Optimal strategy")
     st.subheader("Input information")
@@ -91,7 +88,6 @@ def strategy():
             min_value=0,
             max_value=130,
             step=1,
-            # format="%.0f",
         )
     with col_5:
         disease = st.selectbox(

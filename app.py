@@ -1,5 +1,7 @@
 import streamlit as st
 import os
+import pandas as pd
+import datetime
 
 # set streamlit
 st.set_page_config(page_title="app.py", layout="wide")
@@ -14,12 +16,27 @@ from views.strategy import strategy
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.abspath(os.path.join(current_dir, os.pardir))
 
-# データETL: Extract/Transfer/Load
-# rawデータを整形し、merged_data.csvを生成。結果のグラフ出力は、merged_data.csvをベースに作成。
+# 本日の日付
+d_today = datetime.date.today()
+
+# 【前準備】データETL
+## rawデータを整形し、merged_data.csvを生成。
+## 結果のグラフ出力は、merged_data.csvをベースに作成。
 folder_path = "./data/raw"
 etl_path = "./data/etl"
 output_file_name = "merged_data.csv"
-merge_csv_files(folder_path, etl_path, output_file_name)
+
+
+# データ出力
+def data_etl() -> pd.DataFrame:
+    df_merged = merge_csv_files(folder_path, etl_path, output_file_name)
+    return df_merged
+
+
+# 変換をキャッシュする
+@st.cache
+def convert_df(df):
+    return df.to_csv().encode("utf-8")
 
 
 # 画面1: Qolo
@@ -40,9 +57,17 @@ def home():
     st.header("KPI Report made by Qolo inc.")
     st.markdown("過去取得されたデータに基づいて、KPIレポートを作成します。")
     st.text("Qolo inc. output monthly KPI reports based on the past data.")
+    df_merged = data_etl()
+    csv = convert_df(df_merged)
+    st.download_button(
+        label="CSVファイルのダウンロード",
+        data=csv,
+        file_name=f"{d_today}_merged_data.csv",
+        mime="text/csv",
+    )
 
 
-# 画面: strategy
+# 画面: Strategy
 def display_strategy():
     """Display patients' strategy"""
     return strategy()

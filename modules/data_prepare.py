@@ -8,7 +8,7 @@ import numpy as np
 
 
 # CSVファイルをマージする
-def merge_csv_files(folder_path, etl_path, output_file_name):
+def merge_csv_files(folder_path, etl_path, output_file_name) -> pd.DataFrame:
 
     # header_list.jsonから読み込み
     with open("./data/other/header_list.json", "r") as f:
@@ -47,7 +47,7 @@ def merge_csv_files(folder_path, etl_path, output_file_name):
     df_filename.to_csv("./results/filename_list.csv", index=False)
 
     # CSVファイル読み込み
-    df_temp = []
+    df_merged = pd.DataFrame()
 
     for file in csv_files:
 
@@ -103,30 +103,28 @@ def merge_csv_files(folder_path, etl_path, output_file_name):
 
         """アンケートQ1を文字列「1名」から数値「1」に置換"""
         df_quest = df_quest.replace({"q1": {"1名": 1, "2名": 2, "3名": 3}})
-        print(df_quest)
 
         """アンケート回答Q1~5を連結"""
         df5 = pd.concat([df4, df_quest], axis=1)
 
         """CSVの中身を下に追加していく"""
-        df_temp.append(df5)
+        df_merged = pd.concat([df_merged, df5], axis=0, sort=False, ignore_index=True)
 
-    merged_df = pd.concat(df_temp, sort=False, ignore_index=True)
-    print(merged_df)
+    print(df_merged)
 
     """ 全CSVファイルをマージした ../data/etl/merged_data.csv を出力 """
     output_path = os.path.join(etl_path, output_file_name)
 
-    merged_df.columns = header_list
-    merged_df.to_csv(output_path, index=False)
+    df_merged.columns = header_list
+    df_merged.to_csv(output_path, index=False)
 
     print(f"{len(csv_files)} CSV files merged into {output_file_name}")
 
     # 症例数と累積動作回数をカウント
-    patient_list = merged_df[patient].unique()
+    patient_list = df_merged[patient].unique()
     count_patient_num = len(patient_list)
 
-    count_move_cumsum = merged_df[standup_num].sum(axis=0)
+    count_move_cumsum = df_merged[standup_num].sum(axis=0)
 
     lst_1 = [count_patient_num]
     lst_2 = [count_move_cumsum]
@@ -136,8 +134,8 @@ def merge_csv_files(folder_path, etl_path, output_file_name):
     df_count_result.to_csv(
         "./results/count_output.csv", header=True, index=False, encoding="utf-8"
     )
-    print(f"症例数は{count_patient_num}")
-    print(f"累積動作回数は{count_move_cumsum}")
+
+    return df_merged
 
 
 if __name__ == "__main__":
