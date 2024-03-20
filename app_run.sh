@@ -1,12 +1,16 @@
 #!/bin/bash
 
 # app.pyを実行するカレントディレクトリへ移動
-# TODO: 各環境に応じて変更
-cd ~/Desktop/Qolo/Qolo_KPI_report
+# TODO: 各環境に応じて変更\
+DIR="/Users/shintaro/Desktop/Qolo/Qolo_KPI_report"
+cd $DIR
 
 # app.py実行メッセージ
-echo "KPIレポートアプリが起動します"
+echo "KPIレポートアプリを起動します"
+echo "run $DIR/app.py"
 
 # app.pyの実行
-streamlit run ~/Desktop/Qolo/Qolo_KPI_report/app.py
+# STREAMLIT=`which streamlit`
+# echo $STREAMLIT
+/Users/shintaro/.pyenv/shims/streamlit run "$DIR/app.py"
 
